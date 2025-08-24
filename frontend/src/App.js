@@ -12,31 +12,31 @@ import { useParams } from "react-router-dom";
 
 
 function HomePage() {
-  const { id } = useParams(); // Get the dynamic id
+  const { id } = useParams();
   return (
-    <BoardProvider canvasId={id}>
-      <ToolboxProvider>
-        <div className="app-container">
-          <Toolbar />
-          <Board id={id}/>
-          <Toolbox />
-          <Sidebar /> 
-        </div>
-      </ToolboxProvider>
-    </BoardProvider>
+    <ToolboxProvider>
+      <div className="app-container">
+        <Toolbar />
+        <Board id={id}/>
+        <Toolbox />
+        <Sidebar /> 
+      </div>
+    </ToolboxProvider>
   );
 }
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/" element={<HomePage />} />
-        <Route path="/:id" element={<HomePage />} /> 
-      </Routes>
-    </Router>
+    <BoardProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/:id" element={<HomePage />} /> 
+        </Routes>
+      </Router>
+    </BoardProvider>
   );
 }
 
