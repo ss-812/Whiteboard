@@ -6,6 +6,7 @@ import {
   isPointNearElement,
 } from "../utils/element";
 import { updateCanvas, fetchInitialCanvasElements } from "../utils/api";
+import { getSvgPathFromStroke } from "../../utils/element";
 
 const boardReducer = (state, action) => {
   switch (action.type) {
