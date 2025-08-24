@@ -7,6 +7,7 @@ import {
 } from "../utils/element";
 import { updateCanvas, fetchInitialCanvasElements } from "../utils/api";
 import { getSvgPathFromStroke } from "../utils/element";
+import getStroke from "perfect-freehand";
 
 const boardReducer = (state, action) => {
   switch (action.type) {
