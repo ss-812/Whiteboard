@@ -1,21 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import './index.min.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import boardContext from '../../store/board-context';
-import { useParams } from 'react-router-dom';
-
 
 const Sidebar = () => {
   const [canvases, setCanvases] = useState([]);
   const token = localStorage.getItem('whiteboard_user_token');
-  const { canvasId, setCanvasId,setElements,setHistory, isUserLoggedIn, setUserLoginStatus} = useContext(boardContext);
+  const { canvasId, setCanvasId, setElements, setHistory, isUserLoggedIn, setUserLoginStatus } = useContext(boardContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const { id } = useParams(); 
+  const { id } = useParams();
 
   useEffect(() => {
     if (isUserLoggedIn) {
@@ -23,7 +21,11 @@ const Sidebar = () => {
     }
   }, [isUserLoggedIn]);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (id && id !== canvasId) {
+      setCanvasId(id);
+    }
+  }, [id, canvasId, setCanvasId]);
 
   const fetchCanvases = async () => {
     try {
@@ -31,8 +33,6 @@ const Sidebar = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCanvases(response.data);
-      console.log(response.data)
-      
       if (response.data.length === 0) {
         const newCanvas = await handleCreateCanvas();
         if (newCanvas) {
@@ -40,7 +40,7 @@ const Sidebar = () => {
           handleCanvasClick(newCanvas._id);
         }
       } else if (!canvasId && response.data.length > 0) {
-        if(!id){
+        if (!id) {
           setCanvasId(response.data[0]._id);
           handleCanvasClick(response.data[0]._id);
         }
@@ -55,7 +55,6 @@ const Sidebar = () => {
       const response = await axios.post('https://whiteboard-be-x3f8.onrender.com/api/canvas/create', {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log(response.data)  
       fetchCanvases();
       setCanvasId(response.data.canvasId);
       handleCanvasClick(response.data.canvasId);
