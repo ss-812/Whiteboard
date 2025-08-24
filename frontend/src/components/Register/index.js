@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './index.module.css';
 
@@ -15,20 +16,18 @@ const Register = () => {
       return;
     }
     try {
-      const response = await fetch('https://whiteboard-be-x3f8.onrender.com/api/users/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        alert('Registration successful');
-        navigate('/login');
-      } else {
-        alert(data.message || 'Registration failed');
-      }
+      const response = await axios.post('https://whiteboard-be-x3f8.onrender.com/api/users/register', { email, password });
+      const token = response.data.token;
+      localStorage.setItem('whiteboard_user_token', token);
+
+      // Create a new canvas for the user
+      const canvasRes = await axios.post(
+        'https://whiteboard-be-x3f8.onrender.com/api/canvas/create',
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const canvasId = canvasRes.data.canvasId;
+      navigate(`/${canvasId}`);
     } catch (error) {
       console.error('Registration error:', error);
       alert('An error occurred during registration');

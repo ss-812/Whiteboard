@@ -40,25 +40,18 @@ function Board({ id }) {
 
   useEffect(() => {
     if (id) {
-      // Join the canvas room (no need for userId)
       socket.emit("joinCanvas", { canvasId: id });
-
-      // Listen for updates from other users
       socket.on("receiveDrawingUpdate", (updatedElements) => {
         setElements(updatedElements);
       });
-
-      // Load initial canvas data
       socket.on("loadCanvas", (initialElements) => {
         setElements(initialElements);
       });
-
       socket.on("unauthorized", (data) => {
         console.log(data.message);
         alert("Access Denied: You cannot edit this canvas.");
         setIsAuthorized(false);
       });
-
       return () => {
         socket.off("receiveDrawingUpdate");
         socket.off("loadCanvas");
@@ -74,12 +67,13 @@ function Board({ id }) {
           const response = await axios.get(`https://whiteboard-be-x3f8.onrender.com/api/canvas/load/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          setCanvasId(id); // Set the current canvas ID
-          setElements(response.data.elements); // Set the fetched elements
-          setHistory(response.data.elements); // Set the fetched elements
+          setCanvasId(id);
+          setElements(response.data.elements);
+          setHistory(response.data.elements);
+          setIsAuthorized(true); // <-- Set authorized if fetch succeeds
         } catch (error) {
+          setIsAuthorized(false); // <-- Block drawing if not authorized
           console.error("Error loading canvas:", error);
-        } finally {
         }
       }
     };

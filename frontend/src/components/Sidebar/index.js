@@ -22,10 +22,10 @@ const Sidebar = () => {
   }, [isUserLoggedIn]);
 
   useEffect(() => {
-    if (id && id !== canvasId) {
+    if (id && canvases.some(c => c._id === id) && id !== canvasId) {
       setCanvasId(id);
     }
-  }, [id, canvasId, setCanvasId]);
+  }, [id, canvasId, canvases, setCanvasId]);
 
   const fetchCanvases = async () => {
     try {
@@ -33,6 +33,7 @@ const Sidebar = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCanvases(response.data);
+      // Only auto-select if the canvas is in the user's list
       if (response.data.length === 0) {
         const newCanvas = await handleCreateCanvas();
         if (newCanvas) {
@@ -40,7 +41,7 @@ const Sidebar = () => {
           handleCanvasClick(newCanvas._id);
         }
       } else if (!canvasId && response.data.length > 0) {
-        if (!id) {
+        if (!id || !response.data.some(c => c._id === id)) {
           setCanvasId(response.data[0]._id);
           handleCanvasClick(response.data[0]._id);
         }
